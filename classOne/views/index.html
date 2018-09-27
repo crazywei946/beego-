@@ -1,0 +1,88 @@
+
+<script>
+    $(function () {
+        //给删除按钮绑定函数
+        $('.dels').click(function () {
+            return confirm("你是个厦鸟么？")
+        })
+
+        //给类型选择框绑定change函数
+        $('#select').change(function () {
+
+            //进行表单提交功能
+            $('#typeform').submit()
+        })
+    })
+
+</script>
+
+<div class="main_body" id="main_body">
+    <div class="breadcrub">
+        当前位置：文章管理>文章列表
+    </div>
+    <div class="pannel">
+        <span class="sel_label">请选择文章分类：</span>
+
+        <form method="get" action="/article/showArticleList" id="typeform">
+            <select name="select" id="select" class="sel_opt">
+                <option selected="true">所有分类</option>
+            {{range .articleTypes}}
+            {{if compare $.typename .TypeName}}
+                <option selected="true">{{.TypeName}}</option>
+            {{else}}
+                <option>{{.TypeName}}</option>
+            {{end}}
+
+            {{end}}
+            </select>
+
+            <input type="submit" hidden="hidden">
+        </form>
+
+        <table class="common_table">
+            <tr>
+                <th width="43%">文章标题</th>
+                <th width="10%">文章内容</th>
+                <th width="16%">添加时间</th>
+                <th width="7%">阅读量</th>
+                <th width="7%">删除</th>
+                <th width="7%">编辑</th>
+                <th width="10%">文章类型</th>
+            </tr>
+
+        {{range .articles}}
+            <tr>
+                <td>{{.ArtiName}}</td>
+                <td><a href="/article/content?id={{.Id}}">查看详情</a></td>
+                <td> {{.Time.Format "2006-01-02 15:04:05"}}</td>
+                <td>{{.Count}}</td>
+                <td><a href="/article/deleteArticle?id={{.Id}}" class="dels">删除</a></td>
+                <td><a href="/article/updateArticle?id={{.Id}}">编辑</a></td>
+                <td>{{.ArticleType.TypeName}}</td>
+            </tr>
+        {{end}}
+
+        </table>
+
+        <ul class="pagenation">
+            <li><a href="/article/showArticleList?currenPage=1&&select={{.typename}}">首页</a></li>
+        {{if compare .fristFlag true}}
+            <li>上一页</li>
+        {{else}}
+            <li><a href="/article/showArticleList?currenPage={{.currenPage | prePage}}&&select={{.typename}}">上一页 </a>
+            </li>
+        {{end}}
+
+
+        {{if compare .endFlag true}}
+            <li>下一页</li>
+        {{else}}
+            <li><a href="/article/showArticleList?currenPage={{.currenPage | nextPage}}&&select={{.typename}}">下一页</a>
+            </li>
+        {{end}}
+            <li><a href="/article/showArticleList?currenPage={{.totalPage}}&&select={{.typename}}">末页</a></li>
+            <li>共{{.Count}}条记录/共{{.totalPage}}页/当前{{.currenPage}}页</li>
+        </ul>
+    </div>
+</div>
+
